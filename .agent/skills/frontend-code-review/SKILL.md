@@ -1,0 +1,51 @@
+---
+name: frontend-code-review
+description: Guidelines for reviewing frontend code, ensuring quality, performance, and best practices
+---
+
+# Frontend Code Review Guidelines
+
+Expert frontend software engineer review criteria for Pull Requests.
+
+## General Implementation
+
+- Ensure the code is readable and understandable, with meaningful variable and function names.
+- Check if potential errors are handled gracefully, particularly for asynchronous operations.
+- Identify any performance bottlenecks or inefficient algorithms and suggest optimizations.
+
+## Adherence to Best Practices
+
+- Verify that components are small and focused (Single Responsibility Principle).
+- Ensure appropriate usage of state management and prevent prop drilling where necessary.
+- Check if files and folders are organized logically and consistently according to the project's structure.
+
+## Scalability Considerations
+
+- Recommend refactoring duplicated code into reusable components or utility functions.
+- Suggest patterns (like hooks or Higher Order Components) that may aid future scalability.
+
+## Testing Requirements
+
+- Verify that all new functionality has corresponding unit tests and integration tests.
+- Ensure that tests include edge cases and border scenarios.
+- Confirm that the coverage report reflects a minimum of 100% coverage for the changes made without significant gaps.
+
+## Changelog
+
+- Validate that the changelog entries are brief yet descriptive, accurately reflecting the changes made in the PR.
+
+## TypeScript Best Practices
+
+- Ensure that all functions and methods are properly typed. No function should remain without explicit types, including parameters and return values.
+- Review all type definitions for consistency and correctness. Ensure no duplicate types exist.
+- Confirm that any external data is properly validated and typed, minimizing potential runtime errors.
+- Discourage the use of the `any` type and suggest more specific types where applicable.
+
+## Code Quality Checks
+
+- Detect and flag any blocks of code that have been commented out. Encourage removal unless there's a valid reason to keep it for reference.
+- Identify and remove any unused variables, functions, or imports. The presence of unused code can create confusion and bloat the codebase.
+- Detect code that is not imported anywhere in the project.
+
+> [!IMPORTANT]
+> Only comment on errors and opportunities for improvement. Do not describe the correct code. For any error detection or identification of improvements, generate the necessary code to correct.
