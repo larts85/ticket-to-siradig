@@ -14,28 +14,28 @@ declare module 'one' {
         | `/(app)/auth/login/password`
         | `/(app)/home`
         | `/(app)/home/(tabs)`
-        | `/(app)/home/(tabs)/feed`
-        | `/(app)/home/(tabs)/feed/`
-        | `/(app)/home/feed`
-        | `/(app)/home/feed/`
+        | `/(app)/home/(tabs)/ticket`
+        | `/(app)/home/(tabs)/ticket/`
         | `/(app)/home/settings`
         | `/(app)/home/settings/`
         | `/(app)/home/settings/blocked-users`
         | `/(app)/home/settings/edit-profile`
+        | `/(app)/home/ticket`
+        | `/(app)/home/ticket/`
         | `/_sitemap`
         | `/auth`
         | `/auth/login`
         | `/auth/login/password`
         | `/home`
         | `/home/(tabs)`
-        | `/home/(tabs)/feed`
-        | `/home/(tabs)/feed/`
-        | `/home/feed`
-        | `/home/feed/`
+        | `/home/(tabs)/ticket`
+        | `/home/(tabs)/ticket/`
         | `/home/settings`
         | `/home/settings/`
         | `/home/settings/blocked-users`
         | `/home/settings/edit-profile`
+        | `/home/ticket`
+        | `/home/ticket/`
       DynamicRoutes: 
         | `/(app)/auth/signup/${OneRouter.SingleRoutePart<T>}`
         | `/auth/signup/${OneRouter.SingleRoutePart<T>}`

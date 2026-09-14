@@ -1,0 +1,395 @@
+{
+  "10fb5623c73d0d577f5967a9aa8372d72f85408a974b688d40eb7f97b13d60bf": {
+    "cuit": "30708651059",
+    "denominacion": "Instituto Leopoldo Marechal",
+    "fecha": "09/12/2025",
+    "tipoFactura": "Recibo C",
+    "numeroComprobante": "0001-00012819",
+    "montoTotal": 318900
+  },
+  "422b04ab283b0b10142f4006a67835edb92680538c479ef405dd4b691582b1b5": {
+    "cuit": "30714657182",
+    "denominacion": "20 DIGITAL APPS S.A.",
+    "fecha": "10/03/2026",
+    "tipoFactura": "Factura B",
+    "numeroComprobante": "0020-00071199",
+    "montoTotal": 35980
+  },
+  "999cf078ef4a5ad2bb707bfd751a40e461d0d215e209d4cd38bd714a3cf836f4": {
+    "cuit": "30715939262",
+    "denominacion": "LADANI SA",
+    "fecha": "26/03/2021",
+    "tipoFactura": "TICKET CLIENTE",
+    "numeroComprobante": "151406825160",
+    "montoTotal": 28550
+  },
+  "2f2793a96a2955bb8fd1b4b9ddb124c9e69879d3b0c6442e4a6ded8f03a0d1db": {
+    "cuit": "30547503190",
+    "denominacion": "USINA LACTEA EL FUENTE S.A.",
+    "fecha": "15/02/2026",
+    "tipoFactura": "Ticket",
+    "puntoVenta": "00137",
+    "numeroComprobante": "00143833",
+    "montoTotal": 20212.83
+  },
+  "d6c0b264db98aa242b0f9c77b6236d93629856773546b625e81a2a8d54a3c75e": {
+    "cuit": null,
+    "denominacion": null,
+    "fecha": "17/03/2026",
+    "tipoFactura": "N. de VENTA",
+    "puntoVenta": "07000",
+    "numeroComprobante": "00086328",
+    "montoTotal": 11370
+  },
+  "4035e6e6c1993fee1090579c815eee50d6809b7c69c0511bcfcb0f76c9c23253": {
+    "cuit": "30709857742",
+    "denominacion": "CINCO OLIVOS S.A.",
+    "fecha": "19/03/2026",
+    "tipoFactura": "Ticket Cliente",
+    "puntoVenta": null,
+    "numeroComprobante": null,
+    "montoTotal": 47500
+  },
+  "d866fe55c38f32dbe575e99fa5c8d34c4976700792efe58215f8dbf16eb07a1b": {
+    "cuit": "33712244629",
+    "denominacion": "COSENZA CONSTRUCCIONES S.A.",
+    "fecha": "04/05/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00200",
+    "numeroComprobante": "00031375",
+    "montoTotal": 4500
+  },
+  "4651d07d34ac60aff8683858f86db7272e670cc38ea8abca91b03cb21f10d676": {
+    "cuit": "27356467308",
+    "denominacion": "ABAL STEFANIA YANET BETSABE",
+    "fecha": "09/05/2026",
+    "tipoFactura": "Factura C",
+    "puntoVenta": "00004",
+    "numeroComprobante": "00002726",
+    "montoTotal": 19500
+  },
+  "0fd11581261af6c098e652f5f3d6ac9b8d06e7ca10e7443712df9ec7b3ef0d1c": {
+    "cuit": "30685849751",
+    "denominacion": "DIA ARGENTINA SA",
+    "fecha": "02/04/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "09380",
+    "numeroComprobante": "00630569",
+    "montoTotal": "31691.00"
+  },
+  "364ef162558601888551957f678e0387e1073cec83732292f28c777ec0f3377e": {
+    "cuit": "30685849751",
+    "denominacion": "DIA ARGENTINA SA",
+    "fecha": "24/04/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "09379",
+    "numeroComprobante": "00363444",
+    "montoTotal": 32395
+  },
+  "bc0852a64f478530ad83465fa15920b24e7c3783f5904a6b463c4685efccbdca": {
+    "cuit": "30717345130",
+    "denominacion": "ADMA DISTRIBUIDORA SRL",
+    "fecha": "07/04/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00002",
+    "numeroComprobante": "00095050",
+    "montoTotal": 39542.19
+  },
+  "2f621276338bfab8405061acafa518f76eb3046d1a7648d9c2b44eb2159b0ac9": {
+    "cuit": "30548083156",
+    "denominacion": "SUC85 COTO CICSA",
+    "fecha": "11/07/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "0085",
+    "numeroComprobante": "05100193",
+    "montoTotal": 49865.2
+  },
+  "b88bd491d282a226fadcb040e278733df1597f2d2f944ee7cf31d2bbb2869961": {
+    "cuit": "20938841994",
+    "denominacion": "SHEN WEI TING",
+    "fecha": "19/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00078",
+    "numeroComprobante": "00195230",
+    "montoTotal": 6649.05
+  },
+  "06bc16fe79c4a096562906bf6426d82457fa7c2104517a891d582fae2f025a8e": {
+    "cuit": "20236015824",
+    "denominacion": "Mundo Insumos de Zabala Roberto Hernan",
+    "fecha": "10/02/2026",
+    "tipoFactura": "Factura",
+    "puntoVenta": "00007",
+    "numeroComprobante": "00005147",
+    "montoTotal": 44997
+  },
+  "0bfa92df0ae8be007fc052b4c3fd5313c3b213c21fa129d805397791d4fd5878": {
+    "cuit": "30687310434",
+    "denominacion": "INC SA",
+    "fecha": "26/05/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "12897",
+    "numeroComprobante": "00470395",
+    "montoTotal": 60050
+  },
+  "75632ffe31bf33f7e67ced9159d99d95596d52eeb859d1c1feed4be0ecbbbdb2": {
+    "cuit": "30647506190",
+    "denominacion": "USINA LACTEA EL PUENTE S.A.",
+    "fecha": "16/07/2026",
+    "tipoFactura": "Tique",
+    "puntoVenta": "00139",
+    "numeroComprobante": "00565523",
+    "montoTotal": 72640.59
+  },
+  "b74d126bfecbb2c4d2309778ef436cdb3de2597a5ec770af1e2be7b0c77ef8cb": {
+    "cuit": null,
+    "denominacion": "Bocaccio",
+    "fecha": "10/05/2026",
+    "tipoFactura": "Ticket Vendedor",
+    "puntoVenta": null,
+    "numeroComprobante": null,
+    "montoTotal": 96500
+  },
+  "341abd29c68939d7a95071df699c0fb7aa0bb6b3c2b2a451ef0a6cfac5061671": {
+    "cuit": "30687310434",
+    "denominacion": "Carrefour / INC SA",
+    "fecha": "15/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "16475",
+    "numeroComprobante": "00164924",
+    "montoTotal": 189614.94
+  },
+  "2c5138739dee3c7f171a6b0c48be56ebeda5d594d25f123179f9f107fbffa3ef": {
+    "cuit": "30687310434",
+    "denominacion": "INC SA",
+    "fecha": "06/06/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "17035",
+    "numeroComprobante": "00242256",
+    "montoTotal": 78233.35
+  },
+  "62365c477b5dab579ce6ce006500ff196d40cb0a578c38b23be5f2d032bb6b02": {
+    "cuit": "20236015824",
+    "denominacion": "Mundo Insumos de Zabala Roberto Hernan",
+    "fecha": "18/01/2026",
+    "tipoFactura": "Factura Original",
+    "puntoVenta": "00007",
+    "numeroComprobante": "00003966",
+    "montoTotal": 59996
+  },
+  "7e4d297c5c95ada25d1bec2ae0298dabaf40f8c78b999f60d954f4a8f89b061e": {
+    "cuit": "20236015824",
+    "denominacion": "Mundo Insumos de Zabala Roberto Hernan",
+    "fecha": "22/04/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00007",
+    "numeroComprobante": "00009241",
+    "montoTotal": 41847.21
+  },
+  "ed40599274aec8776283e40c1bc87ca901cd679fd0c6dee0fa25d970a2901c85": {
+    "cuit": "20178564219",
+    "denominacion": "BERNSTEIN FERNANDO GABRIEL",
+    "fecha": "06/05/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "0013",
+    "numeroComprobante": "00007568",
+    "montoTotal": 86641.48
+  },
+  "71c14d556d74759d85aab37bf448cbafc5c4bc0e6c7e1824e448b3208f559eed": {
+    "cuit": "30548083156",
+    "denominacion": "SUC85 COTO CICSA",
+    "fecha": "13/02/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00085",
+    "numeroComprobante": "04786339",
+    "montoTotal": 188206.97
+  },
+  "4e49cbe7cb0bde735bc68421413c450c3fafd2698f48987a1310bbc052d064d3": {
+    "cuit": "30715175777",
+    "denominacion": "Danitexbh S.r.l.",
+    "fecha": "18/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "0008",
+    "numeroComprobante": "00037718",
+    "montoTotal": 34803.6
+  },
+  "fd8ee8652a0e166814a59faf991c8d150ee566fbddc00daf0a7fbccd1868f63e": {
+    "cuit": "30685849751",
+    "denominacion": "DIA ARGENTINA SA",
+    "fecha": "28/03/2026",
+    "tipoFactura": "Factura B Original",
+    "puntoVenta": "09379",
+    "numeroComprobante": "00360157",
+    "montoTotal": 42665.5
+  },
+  "19caa0d0844df5218b15cf7b4004e70fe845e4e8ceca2f0ca55f942c09b59eeb": {
+    "cuit": "20236015824",
+    "denominacion": "Mundo Insumos de Zabala Roberto Hernan",
+    "fecha": "17/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00007",
+    "numeroComprobante": "00003957",
+    "montoTotal": 59996
+  },
+  "8afd659f532f6e473d8fe9392082638fe59cd6643a9920ca7be32f785bf9888a": {
+    "cuit": "20236015824",
+    "denominacion": "Mundo Insumos de Zabala Roberto Hernan",
+    "fecha": "08/05/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00007",
+    "numeroComprobante": "00010497",
+    "montoTotal": 95190
+  },
+  "9e2ed520fa7512dc967aba6963351c540db4a9c576f9753f856532cefb37cefb": {
+    "cuit": "20444583321",
+    "denominacion": "LADELFA SANTIAGO URIEL",
+    "fecha": "19/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00007",
+    "numeroComprobante": "00014028",
+    "montoTotal": 16556.9
+  },
+  "40d9fac0806927278396b8b683cdf5350a8a6ce939994a41264fc8bd70914d3c": {
+    "cuit": "30548083156",
+    "denominacion": "COTO CENTRO INTEGRAL DE COMERCIALIZACION S.A.",
+    "fecha": "11/05/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "02048",
+    "numeroComprobante": "03070158",
+    "montoTotal": 12435.98
+  },
+  "0479db7139ac8336951a0015d6fd145fb233548308f973a53bf55e13ba694c80": {
+    "cuit": "30548083156",
+    "denominacion": "COTO CICSA",
+    "fecha": "22/05/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "085",
+    "numeroComprobante": "04992916",
+    "montoTotal": "179240.44"
+  },
+  "691986c04abe54057ea070b5e8004d6339045c3f3ee16f4a6851b54631ebe8da": {
+    "cuit": "30647506190",
+    "denominacion": "USINA LACTEA EL PUENTE S.A.",
+    "fecha": "01/04/2026",
+    "tipoFactura": "Ticket",
+    "puntoVenta": "00136",
+    "numeroComprobante": "00590437",
+    "montoTotal": "69668.34"
+  },
+  "f429403287ba7d3a887cc6f4fd0ea4812f8d3c65ac73cc3f33c725e716c5d578": {
+    "cuit": "30714580406",
+    "denominacion": "Sweaters Argentinos S.r.l.",
+    "fecha": "11/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "0006",
+    "numeroComprobante": "00309467",
+    "montoTotal": "21798.00"
+  },
+  "c37cd7476395cb06469af03d71f9ce31e5f970dcab2998fbcacb97b58c3877a8": {
+    "cuit": "30685849751",
+    "denominacion": "DIA ARGENTINA SA",
+    "fecha": "22/03/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "09380",
+    "numeroComprobante": "00626245",
+    "montoTotal": 6487
+  },
+  "cdb74ca4eea7ea65f494aaf5e7a127d05af00d710a25e09b12cac2207b706a85": {
+    "cuit": "30714657182",
+    "denominacion": "20 DIGITAL APPS S.A.",
+    "fecha": "20/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00020",
+    "numeroComprobante": "00065669",
+    "montoTotal": 17990
+  },
+  "c908ed736e5ac24a16889f673425fc8947dcb2b16d91fd05487fe96d1c1890b0": {
+    "cuit": "20233294595",
+    "denominacion": "Rodrigo Díaz Villanueva",
+    "fecha": "05/05/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00002",
+    "numeroComprobante": "00180945",
+    "montoTotal": 68160.51
+  },
+  "3b6aeffb28f6854822426e7a6b426d81244ed279fcd7386ec4669bb8f933eebd": {
+    "cuit": "20373610632",
+    "denominacion": "GOMEL MATIAS NICOLAS",
+    "fecha": "19/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "0007",
+    "numeroComprobante": "00000197",
+    "montoTotal": 8455
+  },
+  "76ad60a84595fdef4420c85e703cf677315ea1656011e69a735b43abd8bf5c46": {
+    "cuit": "30714657182",
+    "denominacion": "20 DIGITAL APPS S.A.",
+    "fecha": "09/02/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00020",
+    "numeroComprobante": "00067877",
+    "montoTotal": 17990
+  },
+  "d2cc338f3afc50cdbd4b40ae85d044b6dc0557eea45622b46a75ffdfc4b70370": {
+    "cuit": "20236015824",
+    "denominacion": "Mundo Insumos de Zabala Roberto Hernan",
+    "fecha": "10/04/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00007",
+    "numeroComprobante": "00008470",
+    "montoTotal": "97643.49"
+  },
+  "e52236bd80c4d89f2b39d9de009a1f7ca01015b2ba4c70da3552b884b8bbe09c": {
+    "cuit": "30710716923",
+    "denominacion": "Latamly SA",
+    "fecha": "03/06/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00013",
+    "numeroComprobante": "00012407",
+    "montoTotal": "400099.00"
+  },
+  "a7bd3da502335148d6a0e10349b6a166946d09c82189cbbfb5faba8182350946": {
+    "cuit": "30548083156",
+    "denominacion": "COTO CICSA",
+    "fecha": "27/03/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00085",
+    "numeroComprobante": "04875337",
+    "montoTotal": 34883.31
+  },
+  "0fd95a9c51fbaecbbe68905e1ded328a3abc2a47a7a7b21ee73a30d00e95bca6": {
+    "cuit": "30715810006",
+    "denominacion": "SOLUTIONS 2 GO SRL",
+    "fecha": "09/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00014",
+    "numeroComprobante": "00191262",
+    "montoTotal": "49999.00"
+  },
+  "e75c837c94befe217a072b8a706aac2b7d7c817b5be1a24586d4af91cc086079": {
+    "cuit": "27350696852",
+    "denominacion": "Andrea Cecilia Vecchio",
+    "fecha": "15/01/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00002",
+    "numeroComprobante": "00312452",
+    "montoTotal": "16585.80"
+  },
+  "1353bca0e99fec7045876aaf5f4e79dcd892d865fb4f5be4b52282f7d5c98344": {
+    "cuit": "30685849751",
+    "denominacion": "DIA ARGENTINA SA",
+    "fecha": "06/04/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "09380",
+    "numeroComprobante": "00632257",
+    "montoTotal": "8098.50"
+  },
+  "d1ffb4361fea8d15e4a71c468ef5323511f7fbee5f8d6fbb9c629c15dfd870df": {
+    "cuit": "30710939523",
+    "denominacion": "ALTAVISTA S.A.",
+    "fecha": "14/02/2026",
+    "tipoFactura": "Factura B",
+    "puntoVenta": "00015",
+    "numeroComprobante": "00060812",
+    "montoTotal": "374999.00"
+  }
+}

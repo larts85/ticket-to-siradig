@@ -14,7 +14,7 @@ type TabRoute = {
 }
 
 const routes: TabRoute[] = [
-  { name: 'home', href: '/home/feed', icon: HouseIcon },
+  { name: 'home', href: '/home/ticket', icon: HouseIcon },
   { name: 'profile', href: '/home/settings', icon: UserCircleIcon },
 ]
 

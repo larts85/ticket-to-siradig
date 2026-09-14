@@ -50,3 +50,5 @@ dist
 .docker
 .vxrn-entry-native.tsx
 .env.development
+.vite
+.cache/swift/
