@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 
 export default defineConfig({
   testDir: './integration',
+  testIgnore: ['**/manual records/**'],
   outputDir: './integration/.output/test-results',
   timeout: 30 * 1000,
   expect: {
