@@ -51,4 +51,4 @@ dist
 .vxrn-entry-native.tsx
 .env.development
 .vite
-.cache/swift/
+.cache/*
