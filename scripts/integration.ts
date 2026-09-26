@@ -13,18 +13,22 @@ import { getTestEnv } from './helpers/get-test-env'
 const FRONTEND_PORT = 8081
 const DOCKER_TIMEOUT = 120_000 // 2 min
 const BUILD_TIMEOUT = 300_000 // 5 min
-const TEST_TIMEOUT = 120_000 // 2 min
+const TEST_TIMEOUT = 240_000 // 4 min
 
 // --- state ---
 const processes: Bun.Subprocess[] = []
 
 // --- helpers ---
 
-async function $(cmd: string, opts?: { silent?: boolean; timeout?: number }) {
+async function $(
+  cmd: string,
+  opts?: { silent?: boolean; timeout?: number; env?: Record<string, string> },
+) {
   if (!opts?.silent) console.info(`$ ${cmd}`)
   const proc = Bun.spawn(['bash', '-c', cmd], {
     stdout: 'inherit',
     stderr: 'inherit',
+    env: opts?.env ? { ...process.env, ...opts.env } : process.env,
   })
   processes.push(proc)
 
@@ -156,13 +160,19 @@ async function main() {
     console.info('\ninstalling playwright...')
     await $('bunx playwright install chromium', { timeout: BUILD_TIMEOUT })
 
+    // load test environment
+    const testEnv = await getTestEnv()
+    Object.assign(process.env, testEnv)
+
     // build
     console.info('\nbuilding...')
-    await $('bun run build', { timeout: BUILD_TIMEOUT })
+    await $('bun run build', {
+      timeout: BUILD_TIMEOUT,
+      env: { ...testEnv, VITE_DEMO_MODE: '1', IS_TESTING: '1' },
+    })
 
     // start frontend
     console.info('\nstarting frontend...')
-    const testEnv = await getTestEnv()
     await spawnWithEnv('bun one serve --port 8081', {
       ...testEnv,
       IS_TESTING: '1',

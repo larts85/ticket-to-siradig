@@ -1,0 +1,34 @@
+import { test, expect } from '@playwright/test';
+
+test('test', async ({ page }) => {
+  await page.goto('https://auth.afip.gob.ar/contribuyente_/login.xhtml');
+  await page.getByRole('spinbutton').click();
+  await page.getByRole('spinbutton').fill('27191122505');
+  await page.getByRole('spinbutton').press('Enter');
+  await page.getByRole('textbox', { name: 'TU CLAVE' }).click();
+  await page.getByRole('textbox', { name: 'TU CLAVE' }).fill('Imadev.2026');
+  await page.getByRole('button', { name: 'Ingresar' }).click();
+  const page1Promise = page.waitForEvent('popup');
+  await page.locator('a').filter({ hasText: 'SiRADIG - Trabajador' }).click();
+  const page1 = await page1Promise;
+  await page1.getByRole('button', { name: 'ARTILES SOTOLONGO LIANEL' }).click();
+  await page1.getByRole('button', { name: 'Aceptar' }).click();
+  await page1.getByRole('button', { name: 'Carga de Formulario' }).click();
+  await page1.getByRole('link', { name: '- Deducciones y desgravaciones' }).click();
+  await page1.getByRole('cell', { name: 'COTO CENTRO INTEGRAL DE' }).nth(3).click();
+  await expect(page1.getByRole('cell', { name: 'COTO CENTRO INTEGRAL DE' }).nth(3)).toBeVisible();
+  await page1.locator('.ui-state-default.ui-corner-all.boton.act_editar.ui-state-hover > .ui-icon').click();
+  await page1.locator('#mesDesde').selectOption('5');
+  await page1.getByRole('link', { name: 'Alta de Comprobante' }).click();
+  await page1.locator('.ui-datepicker-trigger').click();
+  await page1.getByRole('link', { name: '11' }).click();
+  await page1.getByRole('textbox', { name: 'Punto de Venta' }).click();
+  await page1.getByRole('textbox', { name: 'Punto de Venta' }).fill('02048');
+  await page1.getByRole('textbox', { name: 'Punto de Venta' }).press('Tab');
+  await page1.getByRole('textbox', { name: 'Número' }).click();
+  await page1.getByRole('textbox', { name: 'Número' }).fill('03070158');
+  await page1.locator('#cmpMontoFacturado').click();
+  await page1.locator('#cmpMontoFacturado').fill('12435,98');
+  await page1.getByRole('button', { name: 'Agregar' }).click();
+  await page1.getByRole('button', { name: 'Guardar' }).click();
+});

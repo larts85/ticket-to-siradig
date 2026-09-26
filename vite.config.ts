@@ -21,6 +21,8 @@ export default {
     // @rocicorp/zero and @rocicorp/zero/server - they share queryInternalsTag
     // Symbol that must be the same instance for query transforms to work
     external: [
+      'playwright',
+      'playwright-core',
       'on-zero',
       '@vxrn/mdx',
       '@rocicorp/zero',
@@ -53,7 +55,7 @@ export default {
       },
 
       native: {
-        bundler: 'rolldown',
+        bundler: 'rolldown' as any,
       },
 
       router: {
@@ -85,6 +87,8 @@ export default {
             build: {
               rollupOptions: {
                 external: [
+                  'playwright',
+                  'playwright-core',
                   '@rocicorp/zero',
                   'better-auth',
                   'better-auth/plugins',
