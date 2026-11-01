@@ -6,7 +6,7 @@ import type { OneRouter } from 'one'
 declare module 'one' {
   export namespace OneRouter {
     export interface __routes<T extends string = string> extends Record<string, unknown> {
-      StaticRoutes: 
+      StaticRoutes:
         | `/`
         | `/(app)`
         | `/(app)/auth`
@@ -14,34 +14,42 @@ declare module 'one' {
         | `/(app)/auth/login/password`
         | `/(app)/home`
         | `/(app)/home/(tabs)`
+        | `/(app)/home/(tabs)/feed`
         | `/(app)/home/(tabs)/ticket`
         | `/(app)/home/(tabs)/ticket/`
+        | `/(app)/home/(tabs)/user`
+        | `/(app)/home/feed`
         | `/(app)/home/settings`
         | `/(app)/home/settings/`
         | `/(app)/home/settings/blocked-users`
         | `/(app)/home/settings/edit-profile`
         | `/(app)/home/ticket`
         | `/(app)/home/ticket/`
+        | `/(app)/home/user`
+        | `/(app)/user`
         | `/_sitemap`
         | `/auth`
         | `/auth/login`
         | `/auth/login/password`
         | `/home`
         | `/home/(tabs)`
+        | `/home/(tabs)/feed`
         | `/home/(tabs)/ticket`
         | `/home/(tabs)/ticket/`
+        | `/home/(tabs)/user`
+        | `/home/feed`
         | `/home/settings`
         | `/home/settings/`
         | `/home/settings/blocked-users`
         | `/home/settings/edit-profile`
         | `/home/ticket`
         | `/home/ticket/`
-      DynamicRoutes: 
+        | `/home/user`
+        | `/user`
+      DynamicRoutes:
         | `/(app)/auth/signup/${OneRouter.SingleRoutePart<T>}`
         | `/auth/signup/${OneRouter.SingleRoutePart<T>}`
-      DynamicRouteTemplate: 
-        | `/(app)/auth/signup/[method]`
-        | `/auth/signup/[method]`
+      DynamicRouteTemplate: `/(app)/auth/signup/[method]` | `/auth/signup/[method]`
       IsTyped: true
       RouteTypes: {
         '/(app)/auth/signup/[method]': RouteInfo<{ method: string }>
@@ -56,5 +64,11 @@ declare module 'one' {
  */
 type RouteInfo<Params = Record<string, never>> = {
   Params: Params
-  LoaderProps: { path: string; search?: string; subdomain?: string; params: Params; request?: Request }
+  LoaderProps: {
+    path: string
+    search?: string
+    subdomain?: string
+    params: Params
+    request?: Request
+  }
 }

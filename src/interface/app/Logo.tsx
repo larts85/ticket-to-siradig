@@ -1,5 +1,6 @@
 import { SizableText, XStack } from 'tamagui'
 
+import { APP_NAME } from '~/constants/app'
 import { LogoIcon } from './LogoIcon'
 
 export const Logo = ({ height = 24 }: { height?: number }) => {
@@ -9,11 +10,12 @@ export const Logo = ({ height = 24 }: { height?: number }) => {
       <SizableText
         select="none"
         fontFamily="$mono"
-        fontSize={height * 0.65}
-        lineHeight={height * 0.65}
+        fontWeight="bold"
+        fontSize={height * 0.7}
+        lineHeight={height * 0.7}
         $max-md={{ display: 'none' }}
       >
-        Takeout
+        {APP_NAME}
       </SizableText>
     </XStack>
   )

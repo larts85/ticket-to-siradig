@@ -17,9 +17,16 @@ export interface TicketItem {
   numeroComprobante: string
   montoTotal: string | number
   concepto?: string
+  presentado?: string
   cargado?: string
   status?: 'idle' | 'loading' | 'success' | 'error'
   errorMessage?: string
+}
+
+const sortByPresentado = (items: TicketItem[]): TicketItem[] => {
+  const nonPresentados = items.filter((t) => t.presentado !== 'SI')
+  const presentados = items.filter((t) => t.presentado === 'SI')
+  return [...nonPresentados, ...presentados]
 }
 
 export const HomePage = memo(() => {
@@ -66,17 +73,23 @@ export const HomePage = memo(() => {
     try {
       for (let i = 0; i < files.length; i++) {
         const file = files[i]!
-        setStatusMessage(`Analizando archivo ${i + 1} de ${files.length} con Gemini AI...`)
-        
+        setStatusMessage(
+          `Analizando archivo ${i + 1} de ${files.length} con Gemini AI...`,
+        )
+
         const formData = new FormData()
         formData.append('file', file)
-        
+
         const result = await extractSingleTicket(formData)
         if (result) {
-          setTickets(prev => [...prev, { ...result, status: 'idle' }])
+          setTickets((prev) =>
+            sortByPresentado([...prev, { ...result, status: 'idle', presentado: 'NO' }]),
+          )
         }
       }
-      showToast(`${files.length} comprobante(s) procesado(s) secuencialmente.`, { type: 'success' })
+      showToast(`${files.length} comprobante(s) procesado(s) secuencialmente.`, {
+        type: 'success',
+      })
     } catch (err) {
       showToast('Ocurrió un problema procesando los archivos', { type: 'error' })
     } finally {
@@ -90,14 +103,16 @@ export const HomePage = memo(() => {
     if (!url.trim()) return
     setIsLoading(true)
     setStatusMessage('Analizando URL del comprobante...')
-    
+
     try {
       const formData = new FormData()
       formData.append('url', url)
-      
+
       const result = await extractSingleTicket(formData)
       if (result) {
-        setTickets(prev => [...prev, { ...result, status: 'idle' }])
+        setTickets((prev) =>
+          sortByPresentado([...prev, { ...result, status: 'idle', presentado: 'NO' }]),
+        )
         setUrl('')
         showToast('Ticket extraído correctamente.', { type: 'success' })
       }
@@ -117,14 +132,20 @@ export const HomePage = memo(() => {
 
     try {
       const text = await file.text()
-      const { tickets: parsedTickets, skippedCount, duplicateCount } = parseCSVToTickets(text)
+      const {
+        tickets: parsedTickets,
+        skippedCount,
+        duplicateCount,
+      } = parseCSVToTickets(text)
 
       if (parsedTickets.length === 0) {
-        showToast('No se encontraron comprobantes válidos en el archivo CSV', { type: 'error' })
+        showToast('No se encontraron comprobantes válidos en el archivo CSV', {
+          type: 'error',
+        })
         return
       }
 
-      setTickets(prev => [...prev, ...parsedTickets])
+      setTickets((prev) => sortByPresentado([...prev, ...parsedTickets]))
       let msg = `${parsedTickets.length} comprobantes cargados desde CSV.`
       if (duplicateCount > 0) {
         msg += ` (${duplicateCount} duplicados omitidos).`
@@ -152,10 +173,15 @@ export const HomePage = memo(() => {
       const result = await response.json()
 
       if (result.success && Array.isArray(result.data) && result.data.length > 0) {
-        setTickets(prev => [...prev, ...result.data])
-        showToast(`${result.data.length} comprobantes cargados desde tickets_2026.csv`, { type: 'success' })
+        setTickets((prev) => sortByPresentado([...prev, ...result.data]))
+        showToast(`${result.data.length} comprobantes cargados desde tickets_2026.csv`, {
+          type: 'success',
+        })
       } else {
-        showToast(result.error || 'No se pudieron cargar los comprobantes pre-escaneados', { type: 'error' })
+        showToast(
+          result.error || 'No se pudieron cargar los comprobantes pre-escaneados',
+          { type: 'error' },
+        )
       }
     } catch (err: any) {
       showToast('Error al conectar con la API de CSV: ' + err.message, { type: 'error' })
@@ -164,7 +190,6 @@ export const HomePage = memo(() => {
       setStatusMessage('')
     }
   }
-
 
   // Carga masiva con streaming de progreso y cancelación
   const handleAFIPSubmit = async () => {
@@ -177,45 +202,65 @@ export const HomePage = memo(() => {
     setBotLogs(['[Sistema] Iniciando proceso de carga en SIRADIG...'])
 
     // Limpiar estados de error previos para el nuevo intento
-    setTickets(prev =>
-      prev.map(t => ({
+    setTickets((prev) =>
+      prev.map((t) => ({
         ...t,
         status: t.status === 'success' ? 'success' : 'idle',
         errorMessage: undefined,
-      }))
+      })),
     )
 
     const abortController = new AbortController()
     abortControllerRef.current = abortController
 
     try {
-      // Enviamos solo los tickets que aún no han sido cargados con éxito
-      const pendingTickets = tickets.filter(t => t.status !== 'success' && t.cargado !== 'SI')
+      // Enviamos solo los tickets que aún no han sido presentados / cargados con éxito
+      const pendingTickets = tickets.filter(
+        (t) => t.status !== 'success' && t.cargado !== 'SI' && t.presentado !== 'SI',
+      )
 
       if (pendingTickets.length === 0) {
-        showToast('Todos los comprobantes ya figuran como cargados', { type: 'info' })
+        showToast('Todos los comprobantes ya figuran como presentados', { type: 'info' })
         setIsSubmitting(false)
         return
       }
 
-      const matchIndexInList = (list: TicketItem[], item?: TicketItem | { cuit: string; nro?: string; numeroComprobante?: string }) => {
+      const matchIndexInList = (
+        list: TicketItem[],
+        item?: TicketItem | { cuit: string; nro?: string; numeroComprobante?: string },
+      ) => {
         if (!item) return -1
         const cleanC = (item.cuit || '').replace(/\D/g, '')
-        const itemNro = ('numeroComprobante' in item ? item.numeroComprobante : item.nro) || ''
+        const itemNro =
+          ('numeroComprobante' in item ? item.numeroComprobante : item.nro) || ''
         const cleanN = String(itemNro).replace(/\D/g, '')
-        return list.findIndex(t => {
+        return list.findIndex((t) => {
           const tC = (t.cuit || '').replace(/\D/g, '')
           const tN = (t.numeroComprobante || '').replace(/\D/g, '')
           const cuitMatch = tC === cleanC
-          const nroMatch = !cleanN || !tN || tN === cleanN || tN.replace(/^0+/, '') === cleanN.replace(/^0+/, '')
+          const nroMatch =
+            !cleanN ||
+            !tN ||
+            tN === cleanN ||
+            tN.replace(/^0+/, '') === cleanN.replace(/^0+/, '')
           return cuitMatch && nroMatch
         })
+      }
+
+      // Obtener credenciales de ARCA guardadas en la sesión actual del navegador (si existen)
+      let credentials: { cuit?: string; password?: string } | undefined = undefined
+      if (typeof window !== 'undefined' && window.sessionStorage) {
+        const storedCuit = window.sessionStorage.getItem('arca_cuit') || ''
+        const storedPassword = window.sessionStorage.getItem('arca_password') || ''
+        if (storedCuit && storedPassword) {
+          credentials = { cuit: storedCuit, password: storedPassword }
+        }
       }
 
       const response = await fetch('/api/submit-siradig', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(pendingTickets),
+        body: JSON.stringify({ tickets: pendingTickets, credentials }),
         signal: abortController.signal,
       })
 
@@ -248,12 +293,12 @@ export const HomePage = memo(() => {
 
             if (event.message) {
               setSubmitStatusText(event.message)
-              setBotLogs(prev => [...prev, event.message])
+              setBotLogs((prev) => [...prev, event.message])
             }
 
             if (event.type === 'ticket_start' && event.ticketIndex !== undefined) {
               const targetTicket = pendingTickets[event.ticketIndex]
-              setTickets(prev => {
+              setTickets((prev) => {
                 const targetIdx = matchIndexInList(prev, targetTicket)
                 if (targetIdx >= 0) {
                   const next = [...prev]
@@ -266,7 +311,7 @@ export const HomePage = memo(() => {
 
             if (event.type === 'ticket_success' && event.ticketIndex !== undefined) {
               const targetTicket = pendingTickets[event.ticketIndex]
-              setTickets(prev => {
+              setTickets((prev) => {
                 const targetIdx = matchIndexInList(prev, targetTicket)
                 if (targetIdx >= 0) {
                   const next = [...prev]
@@ -284,7 +329,7 @@ export const HomePage = memo(() => {
 
             if (event.type === 'ticket_error' && event.ticketIndex !== undefined) {
               const targetTicket = pendingTickets[event.ticketIndex]
-              setTickets(prev => {
+              setTickets((prev) => {
                 const targetIdx = matchIndexInList(prev, targetTicket)
                 if (targetIdx >= 0) {
                   const next = [...prev]
@@ -302,17 +347,20 @@ export const HomePage = memo(() => {
 
             if (event.type === 'done') {
               setSubmitProgress(100)
-              
+
               // Actualizamos el estado final según los resultados sin eliminar de la lista
               if (event.results && Array.isArray(event.results)) {
                 const hasFailures = event.results.some((r: any) => !r.success)
                 if (hasFailures) {
                   setBotError('Finalizado con errores en algunos comprobantes')
                 }
-                setTickets(prev => {
+                setTickets((prev) => {
                   const updated = [...prev]
                   event.results.forEach((res: any) => {
-                    const matchIdx = matchIndexInList(updated, { cuit: res.cuit, nro: res.nro })
+                    const matchIdx = matchIndexInList(updated, {
+                      cuit: res.cuit,
+                      nro: res.nro,
+                    })
                     if (matchIdx >= 0) {
                       updated[matchIdx] = {
                         ...updated[matchIdx]!,
@@ -325,21 +373,31 @@ export const HomePage = memo(() => {
                   return updated
                 })
                 showToast(
-                  hasFailures ? 'Carga finalizada con errores en algunos comprobantes' : (event.message || 'Todos los comprobantes cargados'),
-                  { type: hasFailures ? 'error' : 'success' }
+                  hasFailures
+                    ? 'Carga finalizada con errores en algunos comprobantes'
+                    : event.message || 'Todos los comprobantes cargados',
+                  { type: hasFailures ? 'error' : 'success' },
                 )
               } else {
-                showToast(event.message || 'Procesamiento finalizado', { type: 'success' })
+                showToast(event.message || 'Procesamiento finalizado', {
+                  type: 'success',
+                })
               }
             }
 
             if (event.type === 'error') {
               setBotError(event.message || 'Error durante la automatización')
               setSubmitStatusText(event.message || 'Error en AFIP')
-              showToast(event.message || 'Error durante la automatización', { type: 'error' })
-              setBotLogs(prev => [...prev, `❌ ${event.message}`])
-              setTickets(prev =>
-                prev.map(t => (t.status !== 'success' ? { ...t, status: 'error', errorMessage: event.message } : t))
+              showToast(event.message || 'Error durante la automatización', {
+                type: 'error',
+              })
+              setBotLogs((prev) => [...prev, `❌ ${event.message}`])
+              setTickets((prev) =>
+                prev.map((t) =>
+                  t.status !== 'success'
+                    ? { ...t, status: 'error', errorMessage: event.message }
+                    : t,
+                ),
               )
             }
           } catch (jsonErr) {
@@ -351,17 +409,27 @@ export const HomePage = memo(() => {
       if (error.name === 'AbortError') {
         showToast('Carga cancelada por el usuario', { type: 'info' })
         setSubmitStatusText('🛑 Proceso de carga cancelado.')
-        setBotLogs(prev => [...prev, '🛑 Proceso cancelado por el usuario.'])
-        setTickets(prev =>
-          prev.map(t => (t.status === 'loading' ? { ...t, status: 'idle', errorMessage: 'Cancelado' } : t))
+        setBotLogs((prev) => [...prev, '🛑 Proceso cancelado por el usuario.'])
+        setTickets((prev) =>
+          prev.map((t) =>
+            t.status === 'loading'
+              ? { ...t, status: 'idle', errorMessage: 'Cancelado' }
+              : t,
+          ),
         )
       } else {
         setBotError(error.message)
         setSubmitStatusText(error.message || 'Error de conexión con AFIP')
-        showToast(error.message || 'Error de conexión o timeout con AFIP', { type: 'error' })
-        setBotLogs(prev => [...prev, `❌ Error: ${error.message}`])
-        setTickets(prev =>
-          prev.map(t => (t.status !== 'success' ? { ...t, status: 'error', errorMessage: error.message } : t))
+        showToast(error.message || 'Error de conexión o timeout con AFIP', {
+          type: 'error',
+        })
+        setBotLogs((prev) => [...prev, `❌ Error: ${error.message}`])
+        setTickets((prev) =>
+          prev.map((t) =>
+            t.status !== 'success'
+              ? { ...t, status: 'error', errorMessage: error.message }
+              : t,
+          ),
         )
       }
     } finally {
@@ -373,19 +441,23 @@ export const HomePage = memo(() => {
   const toggleTicketLoaded = (index: number) => {
     const current = tickets[index]
     if (!current) return
-    const isCurrentlyLoaded = current.status === 'success' || current.cargado === 'SI'
-    const newCargado = isCurrentlyLoaded ? 'NO' : 'SI'
-    const newStatus = isCurrentlyLoaded ? 'idle' : 'success'
+    const isCurrentlyPresentado =
+      current.presentado === 'SI' ||
+      current.cargado === 'SI' ||
+      current.status === 'success'
+    const nextVal = isCurrentlyPresentado ? 'NO' : 'SI'
+    const nextStatus = isCurrentlyPresentado ? 'idle' : 'success'
 
-    setTickets(prev => {
+    setTickets((prev) => {
       const next = [...prev]
       next[index] = {
         ...next[index]!,
-        cargado: newCargado,
-        status: newStatus,
+        presentado: nextVal,
+        cargado: nextVal,
+        status: nextStatus,
         errorMessage: undefined,
       }
-      return next
+      return sortByPresentado(next)
     })
 
     // Persistir el cambio directamente en tickets_2026.csv
@@ -396,23 +468,29 @@ export const HomePage = memo(() => {
         cuit: current.cuit,
         numeroComprobante: current.numeroComprobante,
         puntoVenta: current.puntoVenta,
-        cargado: newCargado,
+        cargado: nextVal,
+        presentado: nextVal,
       }),
-    }).catch(err => console.error('Error al actualizar CSV:', err))
+    }).catch((err) => console.error('Error al actualizar CSV:', err))
   }
 
   const toggleMarkAll = () => {
-    const allLoaded = tickets.every(t => t.status === 'success' || t.cargado === 'SI')
-    const newStatus = allLoaded ? 'idle' : 'success'
-    const newCargado = allLoaded ? 'NO' : 'SI'
+    const allPresentados = tickets.every(
+      (t) => t.presentado === 'SI' || t.status === 'success' || t.cargado === 'SI',
+    )
+    const nextStatus = allPresentados ? 'idle' : 'success'
+    const nextVal = allPresentados ? 'NO' : 'SI'
 
-    setTickets(prev =>
-      prev.map(t => ({
-        ...t,
-        cargado: newCargado,
-        status: newStatus,
-        errorMessage: undefined,
-      }))
+    setTickets((prev) =>
+      sortByPresentado(
+        prev.map((t) => ({
+          ...t,
+          presentado: nextVal,
+          cargado: nextVal,
+          status: nextStatus,
+          errorMessage: undefined,
+        })),
+      ),
     )
 
     // Persistir todos en tickets_2026.csv
@@ -421,13 +499,16 @@ export const HomePage = memo(() => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         all: true,
-        cargado: newCargado,
+        cargado: nextVal,
+        presentado: nextVal,
       }),
-    }).catch(err => console.error('Error al actualizar todos en CSV:', err))
+    }).catch((err) => console.error('Error al actualizar todos en CSV:', err))
 
     showToast(
-      allLoaded ? 'Todos marcados como pendientes en CSV' : 'Todos marcados como cargados en CSV',
-      { type: 'info' }
+      allPresentados
+        ? 'Todos marcados como pendientes en CSV'
+        : 'Todos marcados como presentados en CSV',
+      { type: 'info' },
     )
   }
 
@@ -439,32 +520,36 @@ export const HomePage = memo(() => {
     }
     setIsSubmitting(false)
     setSubmitStatusText('🛑 Proceso de carga cancelado.')
-    setBotLogs(prev => [...prev, '🛑 Cancelación solicitada por el usuario.'])
-    setTickets(prev =>
-      prev.map(t => (t.status === 'loading' ? { ...t, status: 'idle', errorMessage: 'Cancelado' } : t))
+    setBotLogs((prev) => [...prev, '🛑 Cancelación solicitada por el usuario.'])
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.status === 'loading' ? { ...t, status: 'idle', errorMessage: 'Cancelado' } : t,
+      ),
     )
   }
 
   const updateTicketField = (index: number, field: string, value: any) => {
-    setTickets(prev => {
+    setTickets((prev) => {
       const next = [...prev]
       const current = next[index]!
       const updated = { ...current, [field]: value }
-      if (field === 'cargado') {
+      if (field === 'cargado' || field === 'presentado') {
         const isYes = /^(si|sí|true|1)$/i.test(String(value).trim())
-        updated.cargado = isYes ? 'SI' : 'NO'
+        const val = isYes ? 'SI' : 'NO'
+        updated.cargado = val
+        updated.presentado = val
         updated.status = isYes ? 'success' : 'idle'
       } else if (field !== 'status') {
         updated.status = 'idle'
         updated.errorMessage = undefined
       }
       next[index] = updated
-      return next
+      return sortByPresentado(next)
     })
   }
 
   const removeTicket = (index: number) => {
-    setTickets(prev => prev.filter((_, i) => i !== index))
+    setTickets((prev) => prev.filter((_, i) => i !== index))
   }
 
   const clearAllTickets = () => {
@@ -477,7 +562,7 @@ export const HomePage = memo(() => {
     }
   }
 
-  const hasFailedTickets = tickets.some(t => t.status === 'error')
+  const hasFailedTickets = tickets.some((t) => t.status === 'error')
 
   const content = (
     <YStack
@@ -507,11 +592,25 @@ export const HomePage = memo(() => {
           </H1>
 
           <Theme name="blue">
-            <YStack p="$4" bg="$color3" rounded="$4" borderColor="$color6" borderWidth={1} gap="$4">
+            <YStack
+              p="$4"
+              bg="$color3"
+              rounded="$4"
+              borderColor="$color6"
+              borderWidth={1}
+              gap="$4"
+            >
               <H3>1. Carga de comprobantes</H3>
 
               {/* Opción 1: Carga desde CSV (Sin consumir cuota de IA) */}
-              <YStack p="$3" bg="$color4" rounded="$3" borderColor="$color7" borderWidth={1} gap="$3">
+              <YStack
+                p="$3"
+                bg="$color4"
+                rounded="$3"
+                borderColor="$color7"
+                borderWidth={1}
+                gap="$3"
+              >
                 <XStack justify="space-between" items="center" flexWrap="wrap" gap="$2">
                   <YStack gap="$1" flex={1}>
                     <SizableText fontWeight="bold" size="$4">
@@ -528,13 +627,15 @@ export const HomePage = memo(() => {
                     onPress={handleLoadDefaultCsv}
                     disabled={isLoading || isSubmitting}
                   >
-                    ⚡ Cargar tickets_2026.csv (39 comprobantes)
+                    ⚡ Cargar tickets_2026.csv
                   </Button>
                 </XStack>
 
                 {isWeb && (
                   <YStack gap="$1" mt="$1">
-                    <SizableText size="$2" color="$gray11">O selecciona otro archivo .csv de comprobantes:</SizableText>
+                    <SizableText size="$2" color="$gray11">
+                      O selecciona otro archivo .csv de comprobantes:
+                    </SizableText>
                     <input
                       type="file"
                       accept=".csv,text/csv"
@@ -557,15 +658,21 @@ export const HomePage = memo(() => {
                 <SizableText size="$3" fontWeight="600" color="$gray11">
                   📸 Escaneo con IA (Gemini OCR) — Sujeto a límites de cuota:
                 </SizableText>
-                
+
                 {isWeb && (
                   <YStack gap="$2">
-                    <input 
-                      type="file" 
-                      multiple 
-                      accept="image/*,application/pdf" 
-                      onChange={handleFileUpload} 
-                      style={{ padding: 10, backgroundColor: '#f3f4f6', borderRadius: 8, border: '1px dashed #d1d5db', cursor: 'pointer' }} 
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,application/pdf"
+                      onChange={handleFileUpload}
+                      style={{
+                        padding: 10,
+                        backgroundColor: '#f3f4f6',
+                        borderRadius: 8,
+                        border: '1px dashed #d1d5db',
+                        cursor: 'pointer',
+                      }}
                     />
                   </YStack>
                 )}
@@ -579,7 +686,13 @@ export const HomePage = memo(() => {
                     size="$4"
                     height={44}
                   />
-                  <Button onPress={handleUrlSubmit} theme="blue" px="$4" size="$4" disabled={isLoading || isSubmitting}>
+                  <Button
+                    onPress={handleUrlSubmit}
+                    theme="blue"
+                    px="$4"
+                    size="$4"
+                    disabled={isLoading || isSubmitting}
+                  >
                     Extraer
                   </Button>
                 </XStack>
@@ -588,16 +701,32 @@ export const HomePage = memo(() => {
           </Theme>
 
           {isLoading && (
-            <YStack p="$6" items="center" justify="center" gap="$3" bg="$gray3" rounded="$4">
+            <YStack
+              p="$6"
+              items="center"
+              justify="center"
+              gap="$3"
+              bg="$gray3"
+              rounded="$4"
+            >
               <Spinner size="large" color="$blue10" />
-              <SizableText size="$5" fontWeight="bold">{statusMessage}</SizableText>
-              <SizableText size="$3" color="$gray11">Por seguridad, procesamos tus archivos de a 1 para evitar límites de cuota en la IA.</SizableText>
+              <SizableText size="$5" fontWeight="bold">
+                {statusMessage}
+              </SizableText>
+              <SizableText size="$3" color="$gray11">
+                Por seguridad, procesamos tus archivos de a 1 para evitar límites de cuota
+                en la IA.
+              </SizableText>
             </YStack>
           )}
 
           {/* Panel de Progreso del Bot de AFIP */}
           {(isSubmitting || botLogs.length > 0) && (
-            <Theme name={isSubmitting ? 'blue' : (botError || hasFailedTickets) ? 'red' : 'green'}>
+            <Theme
+              name={
+                isSubmitting ? 'blue' : botError || hasFailedTickets ? 'red' : 'green'
+              }
+            >
               <YStack
                 p="$4"
                 bg="$color3"
@@ -613,9 +742,9 @@ export const HomePage = memo(() => {
                     <SizableText fontWeight="bold" size="$4">
                       {isSubmitting
                         ? '🤖 Bot de AFIP en ejecución'
-                        : (botError || hasFailedTickets)
-                        ? '❌ Error en la carga de AFIP'
-                        : '✅ Carga en AFIP finalizada'}
+                        : botError || hasFailedTickets
+                          ? '❌ Error en la carga de AFIP'
+                          : '✅ Carga en AFIP finalizada'}
                     </SizableText>
                   </XStack>
                   <SizableText fontWeight="bold" color="$color10">
@@ -624,12 +753,14 @@ export const HomePage = memo(() => {
                 </XStack>
 
                 {/* Barra de progreso visual */}
-                <YStack width="100%" height={8} bg="$color5" rounded="$2" overflow="hidden">
-                  <YStack
-                    width={`${submitProgress}%`}
-                    height="100%"
-                    bg="$color10"
-                  />
+                <YStack
+                  width="100%"
+                  height={8}
+                  bg="$color5"
+                  rounded="$2"
+                  overflow="hidden"
+                >
+                  <YStack width={`${submitProgress}%`} height="100%" bg="$color10" />
                 </YStack>
 
                 <SizableText size="$3" color="$color11" fontWeight="500">
@@ -639,19 +770,11 @@ export const HomePage = memo(() => {
                 {/* Botones de acción del scraping */}
                 <XStack gap="$2" flexWrap="wrap" mt="$2">
                   {isSubmitting ? (
-                    <Button
-                      theme="red"
-                      size="$3"
-                      onPress={handleCancelSubmit}
-                    >
+                    <Button theme="red" size="$3" onPress={handleCancelSubmit}>
                       🛑 Cancelar / Detener Carga
                     </Button>
-                  ) : (botError || hasFailedTickets) ? (
-                    <Button
-                      theme="orange"
-                      size="$3"
-                      onPress={handleAFIPSubmit}
-                    >
+                  ) : botError || hasFailedTickets ? (
+                    <Button theme="orange" size="$3" onPress={handleAFIPSubmit}>
                       🔄 Reintentar Carga en AFIP ({tickets.length})
                     </Button>
                   ) : null}
@@ -659,7 +782,7 @@ export const HomePage = memo(() => {
                   <Button
                     size="$3"
                     variant="outlined"
-                    onPress={() => setShowLogs(prev => !prev)}
+                    onPress={() => setShowLogs((prev) => !prev)}
                   >
                     {showLogs ? '👁️ Ocultar Logs' : `👁️ Ver Logs (${botLogs.length})`}
                   </Button>
@@ -676,7 +799,12 @@ export const HomePage = memo(() => {
                     overflow="scroll"
                   >
                     {botLogs.map((log, lIdx) => (
-                      <SizableText key={lIdx} size="$2" color="#e0e0e0" fontFamily="$mono">
+                      <SizableText
+                        key={lIdx}
+                        size="$2"
+                        color="#e0e0e0"
+                        fontFamily="$mono"
+                      >
                         {log}
                       </SizableText>
                     ))}
@@ -690,23 +818,80 @@ export const HomePage = memo(() => {
           {tickets.length > 0 && !isLoading && (
             <Theme name="green">
               <YStack gap="$4" mt="$2">
-                <XStack justify="space-between" items="center" px="$1" flexWrap="wrap" gap="$2">
+                <XStack
+                  justify="space-between"
+                  items="center"
+                  px="$1"
+                  flexWrap="wrap"
+                  gap="$2"
+                >
                   <H2 size="$6">2. Revisa y edita tus comprobantes</H2>
                   <XStack items="center" gap="$2" flexWrap="wrap">
-                    <SizableText color="$color10" fontWeight="bold">
-                      {tickets.length} comprobante(s)
-                    </SizableText>
+                    <XStack items="center" gap="$1" flexWrap="wrap">
+                      <SizableText color="$color10" fontWeight="bold">
+                        {tickets.length} comprobante(s)
+                      </SizableText>
+                      {tickets.some(
+                        (t) =>
+                          t.presentado === 'SI' ||
+                          t.cargado === 'SI' ||
+                          t.status === 'success',
+                      ) && (
+                        <SizableText size="$2" color="$gray10">
+                          (
+                          {
+                            tickets.filter(
+                              (t) =>
+                                t.presentado !== 'SI' &&
+                                t.cargado !== 'SI' &&
+                                t.status !== 'success',
+                            ).length
+                          }{' '}
+                          pendientes /{' '}
+                          {
+                            tickets.filter(
+                              (t) =>
+                                t.presentado === 'SI' ||
+                                t.cargado === 'SI' ||
+                                t.status === 'success',
+                            ).length
+                          }{' '}
+                          presentados al final)
+                        </SizableText>
+                      )}
+                    </XStack>
                     {!isSubmitting && (
                       <>
-                        <Button 
-                          size="$2" 
-                          theme={tickets.every(t => t.status === 'success' || t.cargado === 'SI') ? 'gray' : 'green'} 
-                          variant="outlined" 
+                        <Button
+                          size="$2"
+                          theme={
+                            tickets.every(
+                              (t) =>
+                                t.status === 'success' ||
+                                t.cargado === 'SI' ||
+                                t.presentado === 'SI',
+                            )
+                              ? 'gray'
+                              : 'green'
+                          }
+                          variant="outlined"
                           onPress={toggleMarkAll}
                         >
-                          {tickets.every(t => t.status === 'success' || t.cargado === 'SI') ? '↩️ Desmarcar todos' : '✅ Marcar todos'}
+                          {tickets.every(
+                            (t) =>
+                              t.status === 'success' ||
+                              t.cargado === 'SI' ||
+                              t.presentado === 'SI',
+                          )
+                            ? '↩️ Desmarcar todos'
+                            : '✅ Marcar todos'}
                         </Button>
-                        <Button size="$2" theme="red" variant="outlined" onPress={clearAllTickets}>
+                        <Button
+                          size="$2"
+                          theme="red"
+                          variant="outlined"
+                          onPress={clearAllTickets}
+                        >
                           🗑️ Vaciar
                         </Button>
                       </>
@@ -714,32 +899,87 @@ export const HomePage = memo(() => {
                   </XStack>
                 </XStack>
 
+                {/* Botón principal de inicio de carga en SiRADIG ubicado arriba */}
+                {(() => {
+                  const pendingCount = tickets.filter(
+                    (t) =>
+                      t.status !== 'success' &&
+                      t.cargado !== 'SI' &&
+                      t.presentado !== 'SI',
+                  ).length
+                  const isAllDone = pendingCount === 0 && tickets.length > 0
+
+                  return (
+                    <Button
+                      size="$5"
+                      theme={isAllDone ? 'green' : hasFailedTickets ? 'orange' : 'green'}
+                      onPress={handleAFIPSubmit}
+                      disabled={isSubmitting || tickets.length === 0 || isAllDone}
+                    >
+                      {isSubmitting
+                        ? 'Procesando carga en SiRADIG...'
+                        : isAllDone
+                          ? `🎉 ¡Todos los ${tickets.length} comprobantes están presentados en SiRADIG!`
+                          : hasFailedTickets
+                            ? `Reintentar Carga (${pendingCount} pendiente(s))`
+                            : `Iniciar Carga de ${pendingCount} Comprobante(s) Pendientes en SiRADIG`}
+                    </Button>
+                  )
+                })()}
+
                 {hasFailedTickets && (
-                  <YStack p="$3" bg="#fef2f2" borderColor="#f87171" borderWidth={1} rounded="$3">
+                  <YStack
+                    p="$3"
+                    bg="#fef2f2"
+                    borderColor="#f87171"
+                    borderWidth={1}
+                    rounded="$3"
+                  >
                     <SizableText size="$3" color="#b91c1c" fontWeight="bold">
-                      ⚠️ Algunos comprobantes tuvieron errores durante la carga. Puedes corregir los datos abajo y pulsar "Reintentar Carga".
+                      ⚠️ Algunos comprobantes tuvieron errores durante la carga. Puedes
+                      corregir los datos abajo y pulsar "Reintentar Carga".
                     </SizableText>
                   </YStack>
                 )}
-                
+
                 <YStack gap="$4">
                   {tickets.map((ticket, index) => {
                     const isTicketLoading = ticket.status === 'loading'
                     const isTicketError = ticket.status === 'error'
-                    const isTicketLoaded = ticket.status === 'success' || ticket.cargado === 'SI'
+                    const isTicketPresentado =
+                      ticket.presentado === 'SI' ||
+                      ticket.cargado === 'SI' ||
+                      ticket.status === 'success'
 
                     return (
-                      <YStack 
-                        key={index} 
-                        p="$4" 
-                        bg={isTicketError ? '#fef2f2' : isTicketLoaded ? '#f0fdf4' : '$color3'} 
-                        rounded="$4" 
-                        borderColor={isTicketError ? '#ef4444' : isTicketLoaded ? '#22c55e' : '$color6'} 
-                        borderWidth={isTicketError || isTicketLoaded ? 2 : 1} 
+                      <YStack
+                        key={index}
+                        p="$4"
+                        bg={
+                          isTicketError
+                            ? '#fef2f2'
+                            : isTicketPresentado
+                              ? '#f0fdf4'
+                              : '$color3'
+                        }
+                        rounded="$4"
+                        borderColor={
+                          isTicketError
+                            ? '#ef4444'
+                            : isTicketPresentado
+                              ? '#22c55e'
+                              : '$color6'
+                        }
+                        borderWidth={isTicketError || isTicketPresentado ? 2 : 1}
                         gap="$3"
                         elevation={1}
                       >
-                        <XStack justify="space-between" items="center" flexWrap="wrap" gap="$2">
+                        <XStack
+                          justify="space-between"
+                          items="center"
+                          flexWrap="wrap"
+                          gap="$2"
+                        >
                           <XStack items="center" gap="$2" flexWrap="wrap">
                             <SizableText fontWeight="bold" size="$4">
                               📄 Comprobante #{index + 1}
@@ -748,46 +988,64 @@ export const HomePage = memo(() => {
                               <XStack items="center" gap="$1">
                                 <Spinner size="small" color="$color10" />
                                 <SizableText size="$2" color="$color10" fontWeight="bold">
-                                  Cargando en AFIP...
+                                  Cargando en SiRADIG...
                                 </SizableText>
                               </XStack>
                             )}
-                            {isTicketLoaded && !isTicketLoading && (
-                              <YStack px="$2" py="$0.5" bg="#dcfce7" rounded="$2" borderColor="#86efac" borderWidth={1}>
-                                <SizableText size="$2" color="#15803d" fontWeight="bold">
-                                  ✅ Cargado en AFIP (SI)
-                                </SizableText>
-                              </YStack>
-                            )}
                             {isTicketError && !isTicketLoading && (
-                              <YStack px="$2" py="$0.5" bg="#fee2e2" rounded="$2" borderColor="#fca5a5" borderWidth={1}>
+                              <YStack
+                                px="$2"
+                                py="$0.5"
+                                bg="#fee2e2"
+                                rounded="$2"
+                                borderColor="#fca5a5"
+                                borderWidth={1}
+                              >
                                 <SizableText size="$2" color="#b91c1c" fontWeight="bold">
                                   ❌ Error en carga (NO)
                                 </SizableText>
                               </YStack>
                             )}
-                            {!isTicketLoaded && !isTicketError && !isTicketLoading && (
-                              <YStack px="$2" py="$0.5" bg="$color4" rounded="$2">
-                                <SizableText size="$2" color="$gray11" fontWeight="500">
-                                  ⏳ Pendiente (NO)
+                            {isTicketPresentado && !isTicketLoading && !isTicketError && (
+                              <YStack
+                                px="$2"
+                                py="$0.5"
+                                bg="#dcfce7"
+                                rounded="$2"
+                                borderColor="#86efac"
+                                borderWidth={1}
+                              >
+                                <SizableText size="$2" color="#15803d" fontWeight="bold">
+                                  ✅ Presentado en SiRADIG (SI)
                                 </SizableText>
                               </YStack>
                             )}
+                            {!isTicketPresentado &&
+                              !isTicketError &&
+                              !isTicketLoading && (
+                                <YStack px="$2" py="$0.5" bg="$color4" rounded="$2">
+                                  <SizableText size="$2" color="$gray11" fontWeight="500">
+                                    ⏳ No presentado (NO)
+                                  </SizableText>
+                                </YStack>
+                              )}
                           </XStack>
 
                           {!isSubmitting && (
                             <XStack items="center" gap="$2">
-                              <Button 
-                                size="$2" 
-                                theme={isTicketLoaded ? 'gray' : 'green'} 
-                                variant={isTicketLoaded ? 'outlined' : undefined}
+                              <Button
+                                size="$2"
+                                theme={isTicketPresentado ? 'gray' : 'green'}
+                                variant={isTicketPresentado ? 'outlined' : undefined}
                                 onPress={() => toggleTicketLoaded(index)}
                               >
-                                {isTicketLoaded ? '↩️ Desmarcar' : '✓ Marcar Cargado'}
+                                {isTicketPresentado
+                                  ? '↩️ Desmarcar Presentado'
+                                  : '✓ Marcar como Presentado'}
                               </Button>
-                              <Button 
-                                size="$2" 
-                                theme="red" 
+                              <Button
+                                size="$2"
+                                theme="red"
                                 variant="outlined"
                                 onPress={() => removeTicket(index)}
                               >
@@ -808,21 +1066,29 @@ export const HomePage = memo(() => {
 
                         <XStack gap="$2" flexWrap="wrap">
                           <YStack flex={1} minW={180}>
-                            <SizableText size="$1" mb="$1">CUIT Proveedor</SizableText>
-                            <Input 
-                              value={ticket.cuit || ''} 
-                              onChangeText={(val) => updateTicketField(index, 'cuit', val)} 
-                              placeholder="CUIT" 
+                            <SizableText size="$1" mb="$1">
+                              CUIT Proveedor
+                            </SizableText>
+                            <Input
+                              value={ticket.cuit || ''}
+                              onChangeText={(val) =>
+                                updateTicketField(index, 'cuit', val)
+                              }
+                              placeholder="CUIT"
                               size="$3"
                               disabled={isSubmitting}
                             />
                           </YStack>
                           <YStack flex={2} minW={240}>
-                            <SizableText size="$1" mb="$1">Denominación / Razón Social</SizableText>
-                            <Input 
-                              value={ticket.denominacion || ''} 
-                              onChangeText={(val) => updateTicketField(index, 'denominacion', val)} 
-                              placeholder="Denominación" 
+                            <SizableText size="$1" mb="$1">
+                              Denominación / Razón Social
+                            </SizableText>
+                            <Input
+                              value={ticket.denominacion || ''}
+                              onChangeText={(val) =>
+                                updateTicketField(index, 'denominacion', val)
+                              }
+                              placeholder="Denominación"
                               size="$3"
                               disabled={isSubmitting}
                             />
@@ -831,51 +1097,71 @@ export const HomePage = memo(() => {
 
                         <XStack gap="$2" flexWrap="wrap">
                           <YStack flex={1} minW={120}>
-                            <SizableText size="$1" mb="$1">Fecha</SizableText>
-                            <Input 
-                              value={ticket.fecha || ''} 
-                              onChangeText={(val) => updateTicketField(index, 'fecha', val)} 
-                              placeholder="DD/MM/AAAA" 
+                            <SizableText size="$1" mb="$1">
+                              Fecha
+                            </SizableText>
+                            <Input
+                              value={ticket.fecha || ''}
+                              onChangeText={(val) =>
+                                updateTicketField(index, 'fecha', val)
+                              }
+                              placeholder="DD/MM/AAAA"
                               size="$3"
                               disabled={isSubmitting}
                             />
                           </YStack>
                           <YStack flex={1} minW={120}>
-                            <SizableText size="$1" mb="$1">Tipo</SizableText>
-                            <Input 
-                              value={ticket.tipoFactura || ''} 
-                              onChangeText={(val) => updateTicketField(index, 'tipoFactura', val)} 
-                              placeholder="Factura B/C, etc" 
+                            <SizableText size="$1" mb="$1">
+                              Tipo
+                            </SizableText>
+                            <Input
+                              value={ticket.tipoFactura || ''}
+                              onChangeText={(val) =>
+                                updateTicketField(index, 'tipoFactura', val)
+                              }
+                              placeholder="Factura B/C, etc"
                               size="$3"
                               disabled={isSubmitting}
                             />
                           </YStack>
                           <YStack flex={0.8} minW={80}>
-                            <SizableText size="$1" mb="$1">PV</SizableText>
-                            <Input 
-                              value={ticket.puntoVenta || ''} 
-                              onChangeText={(val) => updateTicketField(index, 'puntoVenta', val)} 
-                              placeholder="00001" 
+                            <SizableText size="$1" mb="$1">
+                              PV
+                            </SizableText>
+                            <Input
+                              value={ticket.puntoVenta || ''}
+                              onChangeText={(val) =>
+                                updateTicketField(index, 'puntoVenta', val)
+                              }
+                              placeholder="00001"
                               size="$3"
                               disabled={isSubmitting}
                             />
                           </YStack>
                           <YStack flex={1.5} minW={120}>
-                            <SizableText size="$1" mb="$1">Nº Comprobante</SizableText>
-                            <Input 
-                              value={ticket.numeroComprobante || ''} 
-                              onChangeText={(val) => updateTicketField(index, 'numeroComprobante', val)} 
-                              placeholder="00084210" 
+                            <SizableText size="$1" mb="$1">
+                              Nº Comprobante
+                            </SizableText>
+                            <Input
+                              value={ticket.numeroComprobante || ''}
+                              onChangeText={(val) =>
+                                updateTicketField(index, 'numeroComprobante', val)
+                              }
+                              placeholder="00084210"
                               size="$3"
                               disabled={isSubmitting}
                             />
                           </YStack>
                           <YStack flex={1.2} minW={120}>
-                            <SizableText size="$1" mb="$1">Monto Total</SizableText>
-                            <Input 
-                              value={String(ticket.montoTotal || '')} 
-                              onChangeText={(val) => updateTicketField(index, 'montoTotal', val)} 
-                              placeholder="Monto" 
+                            <SizableText size="$1" mb="$1">
+                              Monto Total
+                            </SizableText>
+                            <Input
+                              value={String(ticket.montoTotal || '')}
+                              onChangeText={(val) =>
+                                updateTicketField(index, 'montoTotal', val)
+                              }
+                              placeholder="Monto"
                               size="$3"
                               disabled={isSubmitting}
                             />
@@ -885,33 +1171,9 @@ export const HomePage = memo(() => {
                     )
                   })}
                 </YStack>
-
-                {(() => {
-                  const pendingCount = tickets.filter(t => t.status !== 'success' && t.cargado !== 'SI').length
-                  const isAllDone = pendingCount === 0 && tickets.length > 0
-
-                  return (
-                    <Button
-                      mt="$4"
-                      size="$6"
-                      theme={isAllDone ? 'green' : hasFailedTickets ? 'orange' : 'green'}
-                      onPress={handleAFIPSubmit}
-                      disabled={isSubmitting || tickets.length === 0 || isAllDone}
-                    >
-                      {isSubmitting
-                        ? 'Procesando carga en SIRADIG...'
-                        : isAllDone
-                        ? `🎉 ¡Todos los ${tickets.length} comprobantes están cargados con éxito!`
-                        : hasFailedTickets
-                        ? `Reintentar Carga (${pendingCount} pendiente(s))`
-                        : `Iniciar Carga de ${pendingCount} Comprobante(s) Pendientes en SIRADIG`}
-                    </Button>
-                  )
-                })()}
               </YStack>
             </Theme>
           )}
-
         </YStack>
       </YStack>
     </YStack>
