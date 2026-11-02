@@ -8,13 +8,16 @@ import { ToastProvider } from '~/interface/toast/Toast'
 import { ProvideZero } from '~/zero/client'
 
 export function AppLayout() {
-  const { state } = useAuth()
+  const { state, session } = useAuth()
   const pathname = usePathname()
 
-  if (state === 'loading') {
+  // Only block render during the initial loading if there's no session
+  if (state === 'loading' && !session) {
     return null
   }
 
+  // Temporarily bypass auth for testing
+  /*
   // redirect logged-out users away from protected routes
   const isLoggedInRoute = pathname.startsWith('/home')
   if (state === 'logged-out' && isLoggedInRoute) {
@@ -24,8 +27,9 @@ export function AppLayout() {
   // redirect logged-in users away from auth routes
   const isAuthRoute = pathname.startsWith('/auth')
   if (state === 'logged-in' && isAuthRoute) {
-    return <Redirect href="/home/feed" />
+    return <Redirect href="/home/ticket" />
   }
+  */
 
   return (
     <Configuration disableSSR>

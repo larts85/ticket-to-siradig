@@ -50,3 +50,12 @@ dist
 .docker
 .vxrn-entry-native.tsx
 .env.development
+.vite
+.cache/*
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class

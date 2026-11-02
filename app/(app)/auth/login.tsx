@@ -94,7 +94,7 @@ export const LoginPage = () => {
                     showToast('Demo login failed', { type: 'error' })
                     return
                   }
-                  router.replace('/home/feed')
+                  router.replace('/home/ticket')
                 }}
                 disabled={demoLoading}
                 width="100%"

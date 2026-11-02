@@ -1,160 +1,174 @@
-import { Link, type Href } from 'one'
-import { Linking } from 'react-native'
-import { isWeb, ScrollView, SizableText, View, XStack, YStack } from 'tamagui'
+import { memo } from 'react'
+import { isWeb, ScrollView, SizableText, YStack } from 'tamagui'
+import { Svg, Path, Circle, Line } from 'react-native-svg'
+import { H1, H3 } from '~/interface/text/Headings'
+import { PageContainer } from '~/interface/layout/PageContainer'
 
-import { APP_NAME_LOWERCASE, DOMAIN } from '~/constants/app'
-import { useLogout } from '~/features/auth/useLogout'
-import { CaretRightIcon } from '~/interface/icons/phosphor/CaretRightIcon'
-import { DoorIcon } from '~/interface/icons/phosphor/DoorIcon'
-import { UserIcon } from '~/interface/icons/phosphor/UserIcon'
-import { PageLayout } from '~/interface/pages/PageLayout'
-import { SepHeading } from '~/interface/text/Headings'
+function SpiderWebIllustration({ size = 160 }: { size?: number }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 160 160" fill="none">
+      {/* Spiderweb concentric arcs */}
+      <Path
+        d="M20 20 Q50 30 80 20 Q110 30 140 20"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.4}
+      />
+      <Path
+        d="M35 45 Q58 55 80 45 Q102 55 125 45"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.5}
+      />
+      <Path
+        d="M50 70 Q65 78 80 70 Q95 78 110 70"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.6}
+      />
+      <Path
+        d="M65 95 Q72 100 80 95 Q88 100 95 95"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.7}
+      />
 
-import type { IconComponent } from '~/interface/icons/types'
+      {/* Spiderweb radial lines */}
+      <Line
+        x1="80"
+        y1="120"
+        x2="20"
+        y2="20"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.6}
+      />
+      <Line
+        x1="80"
+        y1="120"
+        x2="50"
+        y2="15"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.6}
+      />
+      <Line
+        x1="80"
+        y1="120"
+        x2="80"
+        y2="10"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.7}
+      />
+      <Line
+        x1="80"
+        y1="120"
+        x2="110"
+        y2="15"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.6}
+      />
+      <Line
+        x1="80"
+        y1="120"
+        x2="140"
+        y2="20"
+        stroke="#94a3b8"
+        strokeWidth="2"
+        strokeLinecap="round"
+        opacity={0.6}
+      />
 
-interface SettingItem {
-  id: string
-  title: string
-  icon?: IconComponent
-  onPress?: () => void
-  href?: Href
-  external?: boolean
+      {/* Thread hanging down */}
+      <Line
+        x1="80"
+        y1="120"
+        x2="80"
+        y2="142"
+        stroke="#64748b"
+        strokeWidth="1.5"
+        strokeDasharray="3 3"
+      />
+
+      {/* Little spider */}
+      <Circle cx="80" cy="146" r="4.5" fill="#475569" />
+      {/* Spider legs */}
+      <Path
+        d="M76 144 Q72 142 71 146 M76 147 Q71 147 70 150 M84 144 Q88 142 89 146 M84 147 Q89 147 90 150"
+        stroke="#475569"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        fill="none"
+      />
+    </Svg>
+  )
 }
 
-interface SettingSection {
-  title: string
-  items: SettingItem[]
-}
-
-function SettingRow({ item }: { item: SettingItem }) {
-  const Icon = item.icon
-
+export const SettingsPage = memo(() => {
   const content = (
-    <XStack
-      cursor="pointer"
-      height={56}
-      px="$4"
-      items="center"
-      justify="space-between"
-      hoverStyle={{ bg: '$color2' }}
-      {...(item.onPress && { onPress: item.onPress })}
-    >
-      <XStack gap="$3" items="center" flex={1}>
-        {Icon && (
-          <View width={24} items="center" justify="center">
-            <Icon size={20} color="$color11" />
-          </View>
-        )}
-        <SizableText size="$5">{item.title}</SizableText>
-      </XStack>
-      <CaretRightIcon size={16} color="$color8" />
-    </XStack>
+    <YStack flex={1} bg="$background" py="$10" px="$4" items="center" justify="center">
+      <PageContainer>
+        <YStack
+          gap="$5"
+          maxW={480}
+          mx="auto"
+          width="100%"
+          items="center"
+          justify="center"
+          py="$8"
+          px="$6"
+          bg="$color2"
+          rounded="$6"
+          borderColor="$color5"
+          borderWidth={1}
+        >
+          {/* Telaraña */}
+          <SpiderWebIllustration size={150} />
+
+          <YStack items="center" gap="$2">
+            <H1 size="$8" color="$color12" fontWeight="bold">
+              Vacío
+            </H1>
+            <H3
+              size="$4"
+              color="$color10"
+              fontWeight="normal"
+              style={{ textAlign: 'center' }}
+            >
+              Por el momento no hay configuraciones adicionales aquí.
+            </H3>
+          </YStack>
+
+          <SizableText
+            size="$2"
+            color="$color9"
+            style={{ textAlign: 'center' }}
+            lineHeight={20}
+          >
+            Todas las opciones principales de escaneo, importación de CSV y carga en
+            SiRADIG están directamente disponibles desde la pantalla principal y la
+            pestaña de usuario.
+          </SizableText>
+        </YStack>
+      </PageContainer>
+    </YStack>
   )
 
-  if (item.onPress) {
+  if (isWeb) {
     return content
   }
 
-  if (item.href) {
-    if (item.external && !isWeb) {
-      return (
-        <XStack
-          cursor="pointer"
-          height={56}
-          px="$4"
-          items="center"
-          justify="space-between"
-          hoverStyle={{ bg: '$color2' }}
-          onPress={() => Linking.openURL(`https://${DOMAIN}${item.href as string}`)}
-        >
-          <XStack gap="$3" items="center" flex={1}>
-            {Icon && (
-              <View width={24} items="center" justify="center">
-                <Icon size={20} color="$color11" />
-              </View>
-            )}
-            <SizableText size="$5">{item.title}</SizableText>
-          </XStack>
-          <CaretRightIcon size={16} color="$color8" />
-        </XStack>
-      )
-    }
+  return <ScrollView flex={1}>{content}</ScrollView>
+})
 
-    return (
-      <Link href={item.href} target={item.external ? '_blank' : undefined} asChild>
-        {content}
-      </Link>
-    )
-  }
-
-  return null
-}
-
-export function ProfileSettingsPage() {
-  const { logout } = useLogout()
-
-  const sections: SettingSection[] = [
-    {
-      title: 'Account',
-      items: [
-        {
-          id: 'profile',
-          title: 'Edit Profile',
-          icon: UserIcon,
-          href: '/home/settings/edit-profile',
-        },
-      ],
-    },
-    {
-      title: 'Other',
-      items: [
-        {
-          id: 'logout',
-          title: 'Log Out',
-          icon: DoorIcon,
-          onPress: logout,
-        },
-      ],
-    },
-  ]
-
-  return (
-    <PageLayout useImage>
-      <ScrollView
-        flex={1}
-        showsVerticalScrollIndicator={false}
-        contentInsetAdjustmentBehavior="automatic"
-      >
-        <YStack flex={1} flexBasis="auto" pb="$10">
-          {sections.map((section) => (
-            <YStack key={section.title} mb="$6" ml="$4">
-              <SepHeading>{section.title}</SepHeading>
-              <YStack>
-                {section.items.map((item) => (
-                  <SettingRow key={item.id} item={item} />
-                ))}
-              </YStack>
-            </YStack>
-          ))}
-
-          <LogoAndVersion />
-        </YStack>
-      </ScrollView>
-    </PageLayout>
-  )
-}
-
-function LogoAndVersion() {
-  return (
-    <YStack items="center" pb={100} pt="$4">
-      <XStack items="center" gap="$2">
-        <SizableText color="$color10" fontWeight="bold">
-          {APP_NAME_LOWERCASE}
-        </SizableText>
-      </XStack>
-      <SizableText size="$1" color="$color10" mt="$2">
-        v1.0.0
-      </SizableText>
-    </YStack>
-  )
-}
+export default SettingsPage
