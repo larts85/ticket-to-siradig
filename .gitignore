@@ -52,3 +52,13 @@ dist
 .env.development
 .vite
 .cache/*
+.cache/*
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+tickets_2026.csv
+tickets_2026.csv
